@@ -2,7 +2,7 @@ defmodule BeamMCPTest do
   use ExUnit.Case
   doctest BeamMCP
 
-  test "greets the world" do
-    assert BeamMCP.hello() == :world
+  test "version returns correct version string" do
+    assert BeamMCP.version() == "0.1.0"
   end
 end
