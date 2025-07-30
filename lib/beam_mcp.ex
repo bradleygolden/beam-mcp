@@ -1,18 +1,20 @@
 defmodule BeamMCP do
   @moduledoc """
-  Documentation for `BeamMCP`.
+  BeamMCP: An Elixir implementation of an MCP (Model Context Protocol) server.
   """
+
+  @version Mix.Project.config()[:version]
 
   @doc """
-  Hello world.
-
+  Returns the current version of BeamMCP.
+  
   ## Examples
-
-      iex> BeamMCP.hello()
-      :world
-
+  
+      iex> BeamMCP.version()
+      "0.1.0"
+  
   """
-  def hello do
-    :world
+  def version do
+    @version
   end
 end
