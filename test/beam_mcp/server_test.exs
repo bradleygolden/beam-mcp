@@ -31,11 +31,12 @@ defmodule BeamMCP.ServerTest do
       assert Map.has_key?(info, "uptime_ms")
       assert Map.has_key?(info, "memory")
       
-      assert Map.has_key?(info["memory"], "total")
-      assert Map.has_key?(info["memory"], "processes")
-      assert Map.has_key?(info["memory"], "atom")
-      assert Map.has_key?(info["memory"], "binary")
-      assert Map.has_key?(info["memory"], "ets")
+      assert Map.has_key?(info["memory"], "total_bytes")
+      assert Map.has_key?(info["memory"], "processes_bytes")
+      assert Map.has_key?(info["memory"], "atom_bytes")
+      assert Map.has_key?(info["memory"], "binary_bytes")
+      assert Map.has_key?(info["memory"], "ets_bytes")
+      assert info["memory"]["units"] == "bytes"
       
       assert info["beam_mcp_version"] == BeamMCP.version()
       assert is_binary(info["erlang_version"])
@@ -57,17 +58,26 @@ defmodule BeamMCP.ServerTest do
     test "handle_resource_read with unknown URI returns appropriate error", %{frame: frame} do
       result = Server.handle_resource_read("unknown://resource", frame)
       
-      error = assert_mcp_error(result, -32602)
-      assert error.message == "Unknown resource URI"
+      error = assert_mcp_error(result, -32001)
+      assert error.message == "Resource not found"
     end
   end
 
   describe "resource listing" do
     setup [:setup_frame]
 
-    test "server responds to resource list requests", %{frame: frame} do
-      response = Server.handle_resource_read("system://info", frame)
-      assert_mcp_response(response)
+    test "handle_resource_list returns available resources", %{frame: frame} do
+      {:reply, response, _frame} = Server.handle_resource_list(frame)
+      
+      assert Map.has_key?(response, :resources)
+      assert is_list(response.resources)
+      assert length(response.resources) == 1
+      
+      [resource] = response.resources
+      assert resource.uri == "system://info"
+      assert resource.name == "System Information"
+      assert resource.description == "BEAM VM and runtime information"
+      assert resource.mimeType == "application/json"
     end
   end
 end

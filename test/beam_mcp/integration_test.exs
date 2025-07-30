@@ -40,7 +40,7 @@ defmodule BeamMCP.IntegrationTest do
       request = build_resource_read_request("unknown://resource")
       result = Server.handle_resource_read(request["params"]["uri"], frame)
       
-      assert_mcp_error(result, -32602)
+      assert_mcp_error(result, -32001)
     end
   end
 

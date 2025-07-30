@@ -16,11 +16,12 @@ defmodule BeamMCP.Server do
       process_count: :erlang.system_info(:process_count),
       uptime_ms: :erlang.statistics(:wall_clock) |> elem(0),
       memory: %{
-        total: :erlang.memory(:total),
-        processes: :erlang.memory(:processes),
-        atom: :erlang.memory(:atom),
-        binary: :erlang.memory(:binary),
-        ets: :erlang.memory(:ets)
+        total_bytes: :erlang.memory(:total),
+        processes_bytes: :erlang.memory(:processes),
+        atom_bytes: :erlang.memory(:atom),
+        binary_bytes: :erlang.memory(:binary),
+        ets_bytes: :erlang.memory(:ets),
+        units: "bytes"
       }
     }
 
@@ -28,6 +29,19 @@ defmodule BeamMCP.Server do
   end
 
   def handle_resource_read(_uri, frame) do
-    {:error, %{code: -32602, message: "Unknown resource URI"}, frame}
+    {:error, %{code: -32001, message: "Resource not found"}, frame}
+  end
+
+  def handle_resource_list(frame) do
+    resources = [
+      %{
+        uri: "system://info",
+        name: "System Information",
+        description: "BEAM VM and runtime information",
+        mimeType: "application/json"
+      }
+    ]
+    
+    {:reply, %{resources: resources}, frame}
   end
 end
