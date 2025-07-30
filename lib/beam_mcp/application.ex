@@ -8,8 +8,11 @@ defmodule BeamMCP.Application do
   @impl true
   def start(_type, _args) do
     children = [
-      # Starts a worker by calling: BeamMCP.Worker.start_link(arg)
-      # {BeamMCP.Worker, arg}
+      # Start the MCP server with STDIO transport
+      {Hermes.Server, [
+        server: BeamMCP.Server,
+        transport: :stdio
+      ]}
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
